@@ -98,5 +98,3 @@ pnpm build
 2. Add a browser test for the loading, error/retry, and empty states.
 3. Add `Retry-After`-aware throttling if the account grows beyond roughly 295 affiliates.
 4. Verify against a second account with more than 100 affiliates.
-5. Rotate the OAuth client before sharing or deploying this repository, since the credentials
-   were distributed with the challenge.
