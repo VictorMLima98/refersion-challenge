@@ -1,0 +1,57 @@
+schema_version: "1.0"
+
+preset:
+  id: "pessoal"
+  name: "Personal Base"
+  version: "1.2.0"
+  description: "Personal workflow commands for commits, pull requests, releases, and Jira."
+  author: "Victor Lima"
+  repository: "https://github.com/VictorMLima98/spec-kit"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=1.2.0"
+
+provides:
+  templates:
+    - type: "command"
+      name: "speckit.setup-pessoal"
+      file: "commands/speckit.setup-pessoal.md"
+      description: "Create or update .specify/pessoal.yml for Jira, release, and pull request settings"
+
+    - type: "command"
+      name: "speckit.commit"
+      file: "commands/speckit.commit.md"
+      description: "Create a standardized Conventional Commits commit scoped to the active feature"
+
+    - type: "command"
+      name: "speckit.openpr"
+      file: "commands/speckit.openpr.md"
+      description: "Open a pull request from the current branch using the repository template"
+
+    - type: "command"
+      name: "speckit.open-release"
+      file: "commands/speckit.open-release.md"
+      description: "Open a release pull request for the next semantic version computed from Conventional Commits"
+
+    - type: "command"
+      name: "speckit.send-release"
+      file: "commands/speckit.send-release.md"
+      description: "Merge the release pull request, create the version tag, and print the release note"
+
+    - type: "command"
+      name: "speckit.refine"
+      file: "commands/speckit.refine.md"
+      description: "Refine a Jira issue into a clear, implementable card"
+
+    - type: "command"
+      name: "speckit.open-jira-issue"
+      file: "commands/speckit.open-jira-issue.md"
+      description: "Create a Jira issue from a client demand"
+
+tags:
+  - "personal"
+  - "workflow"
+  - "git"
+  - "release"
+  - "jira"

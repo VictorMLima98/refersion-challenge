@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "pessoal": {
+      "version": "1.2.0",
+      "source": "local",
+      "manifest_hash": "sha256:0ba864a965514fbb784d4ec9d0e09aaa91f5bdf8e2cf0c481c5e9796a7aceba0",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "opencode": [
+          "speckit.setup-pessoal",
+          "speckit.commit",
+          "speckit.openpr",
+          "speckit.open-release",
+          "speckit.send-release",
+          "speckit.refine",
+          "speckit.open-jira-issue"
+        ]
+      },
+      "registered_skills": {},
+      "installed_at": "2026-11-04T12:45:16.539986+00:00"
+    }
+  }
+}
