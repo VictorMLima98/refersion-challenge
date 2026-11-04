@@ -27,10 +27,10 @@ sequential.
 
 **Purpose**: Install the two required dependencies and prepare the test/environment plumbing.
 
-- [ ] T001 Install runtime dependencies with `pnpm add @tanstack/react-query server-only`; confirm both appear in `package.json`.
-- [ ] T002 [P] Add `"test": "node --test lib/*.test.ts"` to the scripts in `package.json`.
-- [ ] T003 [P] Add `"allowImportingTsExtensions": true` to `compilerOptions` in `tsconfig.json` so Node's TypeScript test file can import `./leaderboard.ts`; `noEmit` is already enabled.
-- [ ] T004 [P] Create `.env.example` containing only `REFERSION_CLIENT_ID=` and `REFERSION_CLIENT_SECRET=`, and verify `.gitignore` already excludes `.env*` (add it if missing).
+- [X] T001 Install runtime dependencies with `pnpm add @tanstack/react-query server-only`; confirm both appear in `package.json`.
+- [X] T002 [P] Add `"test": "node --test lib/*.test.ts"` to the scripts in `package.json`.
+- [X] T003 [P] Add `"allowImportingTsExtensions": true` to `compilerOptions` in `tsconfig.json` so Node's TypeScript test file can import `./leaderboard.ts`; `noEmit` is already enabled.
+- [X] T004 [P] Create `.env.example` containing only `REFERSION_CLIENT_ID=` and `REFERSION_CLIENT_SECRET=`, and verify `.gitignore` already excludes `.env*` (add it if missing).
 
 ---
 
@@ -41,13 +41,13 @@ depends on.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Create `lib/types.ts` with `LeaderboardEntry` (`rank`, `affiliateId`, `name`, `commissionCents`) and `LeaderboardResponse` (`entries`) exactly as defined in `data-model.md`; `entries` is never `null`.
-- [ ] T006 [P] Create `lib/leaderboard.test.ts` using `node:test` and `node:assert/strict`. Cover: exact eligibility (`label === "Display in leaderboard"`, `value === "TRUE"`, rejecting `"false"`, `"true"`, and padded values); missing/`NaN`/negative commission becomes `0`; descending sort with tie-break by name then id; result limited to five; ranks contiguous from 1; `$7,025.13` formatting from `702513` cents.
-- [ ] T007 Create `lib/leaderboard.ts` with pure functions `isEligible(fields)`, `commissionCents(affiliate)`, `rankTopFive(affiliates)`, `formatCommission(cents)`. Rules: at most five entries, ranks start at 1, sort by `commissionCents` descending then `name` ascending then `affiliateId` ascending, and never emit negative commission.
-- [ ] T008 Create `lib/refersion.ts` with `import "server-only"`. Implement: read `REFERSION_CLIENT_ID`/`REFERSION_CLIENT_SECRET` and throw a configuration error if missing; exchange credentials at `https://auth.refersion.com/oauth/token` for a short-lived token and cache it in module memory until `expires_in - 60`; `Authorization: Bearer` on every call; `GET {base}/affiliates?page=N&limit=100` starting at page 1 and stopping when `data.length < 100`, with a 50-page guard; `GET {base}/affiliates/{id}/custom-fields` for each affiliate with at most 8 in flight; validate that every response has a `data` array; throw one `UpstreamError` for non-2xx, timeouts, or malformed payloads; use `fetch(..., { cache: "no-store" })`; log details with `console.error` only on the server.
-- [ ] T009 Create `app/api/leaderboard/route.ts` exporting only `GET`. It calls the server module, returns `Response.json({ entries })` with `Cache-Control: no-store`, maps `UpstreamError` to `502` and configuration errors to `500`, and always uses the generic body `{ "error": "Unable to load leaderboard." }` per `contracts/leaderboard-api.md`. Do not add `dynamic = "force-dynamic"` (Cache Components is enabled).
-- [ ] T010 Create `app/providers.tsx` as a `"use client"` component wrapping children in `QueryClientProvider`, using a module-level browser `QueryClient` and a fresh client on the server, following the Next.js 16 TanStack Query guide.
-- [ ] T011 Update `app/layout.tsx` to wrap `{children}` with `<Providers>` while keeping the existing fonts, metadata shape, and `lang="en"`.
+- [X] T005 [P] Create `lib/types.ts` with `LeaderboardEntry` (`rank`, `affiliateId`, `name`, `commissionCents`) and `LeaderboardResponse` (`entries`) exactly as defined in `data-model.md`; `entries` is never `null`.
+- [X] T006 [P] Create `lib/leaderboard.test.ts` using `node:test` and `node:assert/strict`. Cover: exact eligibility (`label === "Display in leaderboard"`, `value === "TRUE"`, rejecting `"false"`, `"true"`, and padded values); missing/`NaN`/negative commission becomes `0`; descending sort with tie-break by name then id; result limited to five; ranks contiguous from 1; `$7,025.13` formatting from `702513` cents.
+- [X] T007 Create `lib/leaderboard.ts` with pure functions `isEligible(fields)`, `commissionCents(affiliate)`, `rankTopFive(affiliates)`, `formatCommission(cents)`. Rules: at most five entries, ranks start at 1, sort by `commissionCents` descending then `name` ascending then `affiliateId` ascending, and never emit negative commission.
+- [X] T008 Create `lib/refersion.ts` with `import "server-only"`. Implement: read `REFERSION_CLIENT_ID`/`REFERSION_CLIENT_SECRET` and throw a configuration error if missing; exchange credentials at `https://auth.refersion.com/oauth/token` for a short-lived token and cache it in module memory until `expires_in - 60`; `Authorization: Bearer` on every call; `GET {base}/affiliates?page=N&limit=100` starting at page 1 and stopping when `data.length < 100`, with a 50-page guard; `GET {base}/affiliates/{id}/custom-fields` for each affiliate with at most 8 in flight; validate that every response has a `data` array; throw one `UpstreamError` for non-2xx, timeouts, or malformed payloads; use `fetch(..., { cache: "no-store" })`; log details with `console.error` only on the server.
+- [X] T009 Create `app/api/leaderboard/route.ts` exporting only `GET`. It calls the server module, returns `Response.json({ entries })` with `Cache-Control: no-store`, maps `UpstreamError` to `502` and configuration errors to `500`, and always uses the generic body `{ "error": "Unable to load leaderboard." }` per `contracts/leaderboard-api.md`. Do not add `dynamic = "force-dynamic"` (Cache Components is enabled).
+- [X] T010 Create `app/providers.tsx` as a `"use client"` component wrapping children in `QueryClientProvider`, using a module-level browser `QueryClient` and a fresh client on the server, following the Next.js 16 TanStack Query guide.
+- [X] T011 Update `app/layout.tsx` to wrap `{children}` with `<Providers>` while keeping the existing fonts, metadata shape, and `lang="en"`.
 
 **Checkpoint**: Foundation ready — the route works with curl and the client can use TanStack Query.
 
@@ -64,8 +64,8 @@ descending commission order and every row belongs to an affiliate whose custom f
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Create `components/leaderboard.tsx` as a `"use client"` component using `useQuery({ queryKey: ["leaderboard"], queryFn, staleTime: 30_000, retry: 1 })` to fetch `/api/leaderboard`. Render a semantic `<table>` with `<caption>`, `<thead>`, `scope="col"` headers (Rank, Affiliate, Lifetime commission), one row per entry, and `formatCommission` for the amount; wrap it in an `overflow-x-auto` container and use restrained Tailwind styling.
-- [ ] T013 [US1] Replace the default content of `app/page.tsx` with a server component that renders the page heading and `<Leaderboard />` inside a centered, responsive layout; update `app/layout.tsx` metadata to name the leaderboard (no default Create Next App copy remains).
+- [X] T012 [US1] Create `components/leaderboard.tsx` as a `"use client"` component using `useQuery({ queryKey: ["leaderboard"], queryFn, staleTime: 30_000, retry: 1 })` to fetch `/api/leaderboard`. Render a semantic `<table>` with `<caption>`, `<thead>`, `scope="col"` headers (Rank, Affiliate, Lifetime commission), one row per entry, and `formatCommission` for the amount; wrap it in an `overflow-x-auto` container and use restrained Tailwind styling.
+- [X] T013 [US1] Replace the default content of `app/page.tsx` with a server component that renders the page heading and `<Leaderboard />` inside a centered, responsive layout; update `app/layout.tsx` metadata to name the leaderboard (no default Create Next App copy remains).
 
 **Checkpoint**: US1 works end-to-end. This alone satisfies the challenge deliverable.
 
@@ -81,7 +81,7 @@ see the error state, then restore it and press Retry to recover without a page r
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] In `components/leaderboard.tsx`, add the `isPending` branch with five skeleton rows using `animate-pulse` (no new dependency) and the `error` branch with a short message and a Retry button calling `refetch()`. Do not render partial table data when `error` is set. Keep the success branch unchanged.
+- [X] T014 [US2] In `components/leaderboard.tsx`, add the `isPending` branch with five skeleton rows using `animate-pulse` (no new dependency) and the `error` branch with a short message and a Retry button calling `refetch()`. Do not render partial table data when `error` is set. Keep the success branch unchanged.
 
 **Checkpoint**: US1 and US2 both work independently.
 
@@ -96,7 +96,7 @@ shows an explicit empty message and no table.
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] In `components/leaderboard.tsx`, add an empty branch when `data.entries.length === 0` that renders an explicit "No eligible affiliates" message and no ranking table. Ensure the success, pending, and error branches are unaffected.
+- [X] T015 [US3] In `components/leaderboard.tsx`, add an empty branch when `data.entries.length === 0` that renders an explicit "No eligible affiliates" message and no ranking table. Ensure the success, pending, and error branches are unaffected.
 
 **Checkpoint**: All three stories are independently functional.
 
@@ -106,9 +106,9 @@ shows an explicit empty message and no table.
 
 **Purpose**: Documentation and delivery gates required by the challenge and constitution.
 
-- [ ] T016 [P] Update `README.md` with: purpose, setup (`pnpm install`, env vars from `.env.example`, `pnpm dev`), commands, design decisions (server proxy, pagination, eligibility, cents-to-USD), unfinished work, and next steps.
-- [ ] T017 Run `pnpm test`, `pnpm lint`, `pnpm exec tsc --noEmit`, and `pnpm build`; fix every failure without weakening the checks. Confirm `.env.local` is not tracked by git.
-- [ ] T018 Run the live validation scenarios in `specs/001-affiliate-leaderboard/quickstart.md` (happy path, pagination stop, loading, error/retry, empty, accessibility at 375 px) and record any deviation or unfinished work in `README.md`.
+- [X] T016 [P] Update `README.md` with: purpose, setup (`pnpm install`, env vars from `.env.example`, `pnpm dev`), commands, design decisions (server proxy, pagination, eligibility, cents-to-USD), unfinished work, and next steps.
+- [X] T017 Run `pnpm test`, `pnpm lint`, `pnpm exec tsc --noEmit`, and `pnpm build`; fix every failure without weakening the checks. Confirm `.env.local` is not tracked by git.
+- [X] T018 Run the live validation scenarios in `specs/001-affiliate-leaderboard/quickstart.md` (happy path, pagination stop, loading, error/retry, empty, accessibility at 375 px) and record any deviation or unfinished work in `README.md`.
 
 ---
 

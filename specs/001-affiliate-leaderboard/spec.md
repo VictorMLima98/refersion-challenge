@@ -160,6 +160,7 @@ field and confirm an explicit empty message is shown.
   state instead of a partially populated ranking; silent omission would be misleading.
 - The page is read-only; no authentication, editing, filtering, sorting controls, or
   persistence are in scope.
-- Data freshness is per page load; no background refresh or scheduled updates are required.
+- Data may be cached for up to 5 minutes; no background refresh or scheduled updates are
+  required.
 - The feature is validated manually against the live Refersion account and with simulated
   slow, failing, and empty responses.

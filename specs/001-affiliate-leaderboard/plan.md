@@ -20,7 +20,7 @@ TailwindCSS provides a small, responsive UI.
 **Primary Dependencies**: Next.js App Router, React, TailwindCSS v4 (already installed),
 TanStack Query v5 (new), `server-only` (new)
 
-**Storage**: N/A — no database or persistence; data is read per request
+**Storage**: N/A — no database; an in-memory Next.js cache holds the result for 5 minutes
 
 **Testing**: `node:test` with `node:assert/strict` for pure leaderboard logic; live-account and
 simulated-failure checks per quickstart

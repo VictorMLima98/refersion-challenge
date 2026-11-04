@@ -79,6 +79,17 @@ challenge account on 2026-11-04 (44 affiliates, 1 page, 22 eligible).
   `dynamic = "force-dynamic"`. The handler uses `fetch(..., { cache: "no-store" })` and returns
   `Cache-Control: no-store`, so it runs per request.
 
+## Server-side cache
+
+- **Decision**: Wrap `getLeaderboard` in Next.js `use cache` with
+  `cacheLife({ stale: 300, revalidate: 300, expire: 3600 })`, and set the TanStack Query
+  `staleTime` to five minutes.
+- **Rationale**: A cold load costs 46 Refersion requests; repeat loads within five minutes then
+  cost none while still refreshing in the background after the window. `cacheComponents` is
+  already enabled, so this uses the project's native caching model with no new dependency.
+- **Alternatives considered**: A hand-rolled module-level TTL map — reinvents the platform
+  cache; caching individual HTTP responses — fragments the data and still recomputes ranking.
+
 ## Error handling
 
 - **Decision**: Define one `UpstreamError` (message plus optional HTTP status). The route maps

@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Refersion Leaderboard
 
-## Getting Started
+A small Next.js app that shows the top five eligible affiliates in a Refersion account by
+lifetime total commission. This is the deliverable for the
+[Refersion Backend Engineer Challenge](docs/refersion-backend-engineer-challenge.md).
 
-First, run the development server:
+## How it works
+
+1. `GET /api/leaderboard` authenticates with the Refersion OAuth client-credentials flow.
+2. It lists every affiliate (`page=1`, `limit=100`, stop when a page returns fewer than 100).
+3. It reads each affiliate's custom fields and keeps only those with a field labelled exactly
+   `Display in leaderboard` whose value is exactly `TRUE`.
+4. It ranks them by `performance.total.commission` descending and returns the top five.
+5. The page renders the result with TanStack Query, including loading, empty, and error states.
+
+Credentials never reach the browser: the Route Handler is the only thing that talks to
+Refersion. The result is cached on the server for 5 minutes, so repeat page loads do not
+re-fetch the 44 custom-field records.
+
+## Run locally
+
+Requires Node.js 24 and pnpm 12.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # then fill in the two values
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable                  | Purpose                          |
+| ------------------------- | -------------------------------- |
+| `REFERSION_CLIENT_ID`     | OAuth client id                  |
+| `REFERSION_CLIENT_SECRET` | OAuth client secret (server only)|
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Commands
 
-## Learn More
+```bash
+pnpm dev                   # development server
+pnpm test                  # pure leaderboard logic (node:test)
+pnpm lint
+pnpm exec tsc --noEmit
+pnpm build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Design decisions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Server proxy + TanStack Query**: the client queries a local Route Handler so the client
+  secret never ships to the browser, while TanStack Query owns loading/error/retry state.
+- **Eligibility is exact**: label and `"TRUE"` comparison is case-sensitive and untrimmed.
+- **Deterministic ranking**: commission descending, then name ascending, then id ascending.
+- **Money**: Refersion's `performance.total.commission` is treated as cents and formatted as
+  USD (`702513` → `$7,025.13`). If the API ever reports whole currency units, only
+  `formatCommission` in `lib/leaderboard.ts` needs to change.
+- **Pagination guard**: 50 pages maximum, so malformed responses cannot loop forever.
+- **Concurrency**: custom-field requests are limited to 8 in flight.
+- **Errors**: the server logs details and returns `502`/`500` with a generic message.
+- **Token resilience**: a `401` triggers one shared token refresh and a retry, because requesting
+  a new Refersion token revokes the previous one of the same type.
+- **Caching**: `getLeaderboard` uses Next.js `use cache` with `cacheLife({ stale: 300,
+  revalidate: 300, expire: 3600 })`. A cold load makes 46 Refersion requests (~3.5 s); loads
+  within 5 minutes use the cached result (~10 ms, zero Refersion calls). TanStack Query uses
+  the same 5-minute `staleTime` in the browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Validation performed
 
-## Deploy on Vercel
+- `pnpm test`, `pnpm lint`, `pnpm exec tsc --noEmit`, and `pnpm build` pass.
+- Live account: 44 affiliates on one page, 22 eligible; the API returned the expected top five
+  (Lily Kertzmann `$7,025.13`, Clark Rolfson `$5,748.70`, Peter Bosco `$5,726.66`,
+  Chauncey Hartmann `$5,627.30`, Mitchel Ortiz `$4,772.34`).
+- Invalid credentials produced `502 {"error":"Unable to load leaderboard."}` with no upstream
+  detail leaked.
+- After an externally issued token revoked the cached one, the next request recovered with a
+  fresh token and returned `200`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Unfinished work
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Only the pure ranking/eligibility logic has automated tests. The route handler, token
+  refresh, and UI states have no integration or browser tests.
+- The empty state and the 375 px layout were verified by code review and unit tests, not
+  against a live empty account or a real mobile browser.
+- Pagination was exercised only against the one-page challenge account (44 < 100); the
+  multi-page path and the 50-page guard are implemented but not tested live.
+- Rate limiting is not retried automatically. A `429` surfaces as an error with a Retry
+  button; there is no `Retry-After` backoff.
+- The 401 token-refresh fix assumes a single long-running server. Multiple serverless instances
+  can still invalidate each other's cached tokens.
+
+## Next steps
+
+1. Add integration tests with a mocked Refersion API for multi-page pagination, a revoked token,
+   a `429`, and malformed payloads.
+2. Add a browser test for the loading, error/retry, and empty states.
+3. Add `Retry-After`-aware throttling if the account grows beyond roughly 295 affiliates.
+4. Verify against a second account with more than 100 affiliates.
+5. Rotate the OAuth client before sharing or deploying this repository, since the credentials
+   were distributed with the challenge.
