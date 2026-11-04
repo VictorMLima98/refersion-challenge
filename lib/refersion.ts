@@ -1,19 +1,12 @@
-import "server-only";
-
-import { cacheLife } from "next/cache";
-
-import { isEligible, rankTopFive } from "./leaderboard";
-import type {
-  Affiliate,
-  CustomField,
-  LeaderboardEntry,
-} from "./types";
+import { isEligible, rankTopFive } from "./leaderboard.ts";
+import type { Affiliate, CustomField, LeaderboardEntry } from "./types.ts";
 
 const AUTH_URL = "https://auth.refersion.com/oauth/token";
 const API_BASE = "https://api.refersion.com/v2026-08";
 const PAGE_SIZE = 100;
 const MAX_PAGES = 50;
 const CONCURRENCY = 8;
+const REQUEST_TIMEOUT_MS = 10_000;
 
 export class UpstreamError extends Error {
   constructor(message: string) {
@@ -61,6 +54,7 @@ async function postForm(url: string, body: URLSearchParams): Promise<unknown> {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
       cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (error) {
     throw new UpstreamError(`Authentication request failed: ${String(error)}`);
@@ -130,6 +124,7 @@ async function getJson(path: string, token: string): Promise<unknown> {
     response = await fetch(`${API_BASE}${path}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (error) {
     throw new UpstreamError(`Refersion request failed: ${String(error)}`);
@@ -260,10 +255,12 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
-export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
-  "use cache";
-  cacheLife({ stale: 300, revalidate: 300, expire: 3600 });
+export function resetRefersionTokenCache(): void {
+  cachedToken = null;
+  pendingToken = null;
+}
 
+export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
   const affiliates = await fetchAffiliates();
   const fieldsByAffiliate = await mapWithConcurrency(
     affiliates,

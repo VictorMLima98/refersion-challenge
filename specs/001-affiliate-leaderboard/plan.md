@@ -88,9 +88,11 @@ components/
 └── leaderboard.tsx            # "use client"; useQuery + pending/error/empty/table
 
 lib/
-├── leaderboard.ts             # Pure: isEligible, rankTop, toEntries
-├── leaderboard.test.ts        # node:test checks for eligibility, sorting, top five
-├── refersion.ts               # "server-only"; token, pagination, custom fields, guards
+├── leaderboard.ts             # Pure: eligibility, ranking, formatting
+├── leaderboard.test.mts       # node:test checks for eligibility, sorting, top five
+├── leaderboard-cache.ts       # "server-only"; 5-minute use cache wrapper
+├── refersion.ts               # Token, pagination, custom fields, guards, timeouts
+├── refersion.test.mts         # Mocked-fetch pagination, 401 refresh, bad payload
 └── types.ts                   # Shared API payload/domain types
 
 .env.example                   # Variable names only

@@ -1,18 +1,3 @@
-<!--
-Sync Impact Report
-==================
-Version change: template (unversioned) → 1.0.0
-Bump rationale: Initial ratification. The constitution previously contained only
-template placeholders; this amendment replaces them with project-specific
-governance. Treated as a first adoption rather than a MINOR bump.
-Modified principles: all (template placeholders → project principles I–V)
-Added sections:
-  - Technology Constraints
-  - Development Workflow & Quality Gates
-Removed sections: none
-Follow-up TODOs: none
--->
-
 # Refersion Leaderboard Constitution
 
 ## Core Principles

@@ -81,9 +81,9 @@ challenge account on 2026-11-04 (44 affiliates, 1 page, 22 eligible).
 
 ## Server-side cache
 
-- **Decision**: Wrap `getLeaderboard` in Next.js `use cache` with
-  `cacheLife({ stale: 300, revalidate: 300, expire: 3600 })`, and set the TanStack Query
-  `staleTime` to five minutes.
+- **Decision**: Wrap `fetchLeaderboard` in a `lib/leaderboard-cache.ts` server-only function
+  using Next.js `use cache` with `cacheLife({ stale: 300, revalidate: 300, expire: 3600 })`,
+  and set the TanStack Query `staleTime` to five minutes.
 - **Rationale**: A cold load costs 46 Refersion requests; repeat loads within five minutes then
   cost none while still refreshing in the background after the window. `cacheComponents` is
   already enabled, so this uses the project's native caching model with no new dependency.
@@ -97,7 +97,9 @@ challenge account on 2026-11-04 (44 affiliates, 1 page, 22 eligible).
   with the same generic body. Details are logged with `console.error` only on the server. The
   client shows a short message and a Retry button that calls `refetch()`.
 - **Rationale**: Satisfies the challenge's "handle API responses and errors appropriately"
-  without leaking secrets or stack traces. One error type is enough for this scope.
+  without leaking secrets or stack traces. One error type is enough for this scope. Every
+  upstream fetch uses a 10-second `AbortSignal.timeout`, so a hung connection surfaces as an
+  error instead of leaving the page loading forever.
 - **Alternatives considered**: Per-affiliate partial failures — would silently hide eligible
   affiliates, contradicting the spec. Automatic retry/backoff inside the server module — more
   code than the scope justifies; a user-triggered retry is the fallback.
@@ -113,9 +115,9 @@ challenge account on 2026-11-04 (44 affiliates, 1 page, 22 eligible).
 
 ## Testing
 
-- **Decision**: Pure functions in `lib/leaderboard.ts` are tested with `node:test` (Node 24 runs
-  TypeScript directly). Add `"test": "node --test lib/*.test.ts"` to `package.json`. No test
-  framework dependency.
+- **Decision**: Pure functions in `lib/leaderboard.ts` and the Refersion client in
+  `lib/refersion.ts` are tested with `node:test` (Node 24 runs TypeScript directly). Add
+  `"test": "node --test lib/*.test.mts"` to `package.json`. No test framework dependency.
 - **Rationale**: Covers pagination stop behavior indirectly through ranking/filtering logic,
   eligibility edge cases, ties, and top-five slicing with zero dependencies.
 - **Alternatives considered**: Vitest/Jest — unnecessary installation and config for a handful

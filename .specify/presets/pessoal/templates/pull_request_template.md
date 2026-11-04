@@ -8,8 +8,8 @@
 
 ## Spec / issue
 
-- Spec Kit: `specs/SAN-XXX/spec.md`
-- Jira: SAN-XXX
+- Spec Kit: `specs/<feature>/spec.md`
+- Jira: <KEY>
 
 ## Type of change
 

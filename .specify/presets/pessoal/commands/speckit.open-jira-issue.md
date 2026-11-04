@@ -23,7 +23,7 @@ jira:
   site: "https://your-domain.atlassian.net"
   cloud_id: "<Atlassian cloudId used by the MCP server>"
   project: "ABC"
-  language: "pt-BR"
+  language: "en"
   default_issue_type: "Task"
 ```
 
@@ -34,7 +34,7 @@ If `jira.cloud_id` or `jira.project` is missing, STOP and show the snippet above
 - The demand text is the source of truth. Never add requirements, acceptance criteria, or scope the client did not state. Gaps are left for `/speckit.specify` to clarify.
 - Keep the client's original wording in the description; do not paraphrase it away.
 - Create at most one issue. Never create a duplicate of an existing open issue.
-- Summary and description in `jira.language` (default `pt-BR`).
+- Summary and description in `jira.language` (default `en`).
 
 ## Execution Steps
 
@@ -73,23 +73,23 @@ tools.atlassian.createJiraIssue({
 Description shape:
 
 ```markdown
-## Demanda do cliente
+## Customer request
 
 <original wording, quoted>
 
-## Contexto
+## Context
 
 <only what the demand states or what is directly observable>
 
-## O que precisa ser feito
+## What needs to be done
 
 - ...
 
-## Fora de escopo
+## Out of scope
 
 - <only when the client said so>
 
-## Observações
+## Notes
 
 - ...
 ```

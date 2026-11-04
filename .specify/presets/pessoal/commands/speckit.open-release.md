@@ -1,5 +1,5 @@
 ---
-description: Open a release PR from the release branch into the target branch for the next semantic version, computed from Conventional Commits since the last tag, with an English + Portuguese changelog. Never merges.
+description: Open a release PR from the release branch into the target branch for the next semantic version, computed from Conventional Commits since the last tag, with the configured changelog. Never merges.
 ---
 
 ## User Input
@@ -55,7 +55,7 @@ release:
   source_branch: "develop"         # branch with unreleased work
   target_branch: "master"          # branch that receives the release
   version_command: ""              # optional: prints {"current","next","type"}
-  changelog_languages: ["en", "pt-BR"]
+  changelog_languages: ["en"]
 ```
 
 Missing keys fall back to the defaults shown above. If `source_branch` does not exist on the remote, fall back to the remote default branch and say so. If `target_branch` does not exist, STOP and ask for the correct branch.
@@ -70,7 +70,7 @@ Missing keys fall back to the defaults shown above. If `source_branch` does not 
 ## Non-Negotiable Rules
 
 - **No hardcoded version.** Compute it from the tags and commits (unless `--version` is given).
-- **Languages**: produce every language listed in `release.changelog_languages` (default English and Portuguese).
+- **Languages**: produce every language listed in `release.changelog_languages` (default English only).
 - **Accuracy**: only list merged work (`<last-tag>..origin/<source_branch>`); never invent items.
 - Never merge, never force-push, never open a duplicate release PR.
 
@@ -96,7 +96,7 @@ Missing keys fall back to the defaults shown above. If `source_branch` does not 
 
 Group the commits by Conventional Commit type and render one section per configured language, from the same data:
 - English: Features, Fixes, Performance, Refactor, Documentation, Chores.
-- Portuguese: Novidades, Correções, Desempenho, Refatoração, Documentação, Manutenção.
+- Other languages: translate the same headings into each configured language.
 - Keep the issue key when present (e.g., `ABC-123`); strip the `type(scope):` prefix from the item text but keep the scope/issue.
 
 ### 4. Avoid Duplicates
@@ -123,14 +123,6 @@ Group the commits by Conventional Commit type and render one section per configu
   - ...
 
   ### Fixes
-  - ...
-
-  ## Changelog (Português)
-
-  ### Novidades
-  - ...
-
-  ### Correções
   - ...
 
   ## Notes

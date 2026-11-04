@@ -1,5 +1,5 @@
 ---
-description: Merge the open release PR and create the annotated version tag with an English + Portuguese changelog, plus a ready-to-send stakeholder message. Never force-pushes.
+description: Merge the open release PR and create the annotated version tag with the configured changelog, plus a ready-to-send stakeholder message. Never force-pushes.
 ---
 
 ## User Input
@@ -55,7 +55,7 @@ release:
   source_branch: "develop"         # branch with unreleased work
   target_branch: "master"          # branch that receives the release
   version_command: ""              # optional: prints {"current","next","type"}
-  changelog_languages: ["en", "pt-BR"]
+  changelog_languages: ["en"]
 ```
 
 Missing keys fall back to the defaults shown above. If `target_branch` does not exist, STOP and ask for the correct branch.
@@ -116,11 +116,8 @@ Missing keys fall back to the defaults shown above. If `target_branch` does not 
 Print a copy-paste message in every configured language, e.g.:
 
 ```markdown
-🇺🇸 Release vX.Y.Z
-<English changelog>
-
-🇧🇷 Release vX.Y.Z
-<Portuguese changelog>
+Release vX.Y.Z
+<changelog>
 
 Released on <date>.
 ```

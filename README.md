@@ -55,17 +55,22 @@ pnpm build
   `formatCommission` in `lib/leaderboard.ts` needs to change.
 - **Pagination guard**: 50 pages maximum, so malformed responses cannot loop forever.
 - **Concurrency**: custom-field requests are limited to 8 in flight.
-- **Errors**: the server logs details and returns `502`/`500` with a generic message.
+- **Errors**: the server logs details and returns `502`/`500` with a generic message. Upstream
+  calls time out after 10 seconds instead of hanging.
 - **Token resilience**: a `401` triggers one shared token refresh and a retry, because requesting
   a new Refersion token revokes the previous one of the same type.
 - **Caching**: `getLeaderboard` uses Next.js `use cache` with `cacheLife({ stale: 300,
-  revalidate: 300, expire: 3600 })`. A cold load makes 46 Refersion requests (~3.5 s); loads
-  within 5 minutes use the cached result (~10 ms, zero Refersion calls). TanStack Query uses
-  the same 5-minute `staleTime` in the browser.
+  revalidate: 300, expire: 3600 })`. On a single long-running server, a cold load makes 46
+  Refersion requests (~3.5 s); loads within 5 minutes use the cached result (~10 ms, zero
+  Refersion calls). TanStack Query uses the same 5-minute `staleTime` in the browser.
+  The default cache handler is per-instance memory, so serverless instances may each cold-load
+  once; use `use cache: remote` if the deployment needs a shared cache.
 
 ## Validation performed
 
-- `pnpm test`, `pnpm lint`, `pnpm exec tsc --noEmit`, and `pnpm build` pass.
+- `pnpm test` (9 tests), `pnpm lint`, `pnpm exec tsc --noEmit`, and `pnpm build` pass.
+- Mocked-fetch tests cover multi-page pagination, a `401` refresh and retry, and a malformed
+  payload.
 - Live account: 44 affiliates on one page, 22 eligible; the API returned the expected top five
   (Lily Kertzmann `$7,025.13`, Clark Rolfson `$5,748.70`, Peter Bosco `$5,726.66`,
   Chauncey Hartmann `$5,627.30`, Mitchel Ortiz `$4,772.34`).
@@ -76,12 +81,11 @@ pnpm build
 
 ## Unfinished work
 
-- Only the pure ranking/eligibility logic has automated tests. The route handler, token
-  refresh, and UI states have no integration or browser tests.
-- The empty state and the 375 px layout were verified by code review and unit tests, not
-  against a live empty account or a real mobile browser.
-- Pagination was exercised only against the one-page challenge account (44 < 100); the
-  multi-page path and the 50-page guard are implemented but not tested live.
+- The route handler and UI states have no browser tests; the empty state and the 375 px layout
+  were verified by code review and unit tests, not against a live empty account or a real
+  mobile browser.
+- Multi-page pagination is covered by a mocked test, but the live account only exercises the
+  one-page path (44 < 100). The 50-page guard is not tested.
 - Rate limiting is not retried automatically. A `429` surfaces as an error with a Retry
   button; there is no `Retry-After` backoff.
 - The 401 token-refresh fix assumes a single long-running server. Multiple serverless instances
@@ -89,8 +93,8 @@ pnpm build
 
 ## Next steps
 
-1. Add integration tests with a mocked Refersion API for multi-page pagination, a revoked token,
-   a `429`, and malformed payloads.
+1. Add mocked tests for a `429` response, the 50-page guard, and the route handler's error
+   mapping.
 2. Add a browser test for the loading, error/retry, and empty states.
 3. Add `Retry-After`-aware throttling if the account grows beyond roughly 295 affiliates.
 4. Verify against a second account with more than 100 affiliates.

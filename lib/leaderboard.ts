@@ -1,6 +1,6 @@
-import type { Affiliate, CustomField, LeaderboardEntry } from "./types";
+import type { Affiliate, CustomField, LeaderboardEntry } from "./types.ts";
 
-export const DISPLAY_FIELD_LABEL = "Display in leaderboard";
+const DISPLAY_FIELD_LABEL = "Display in leaderboard";
 
 export function isEligible(fields: CustomField[]): boolean {
   return fields.some(
@@ -9,7 +9,7 @@ export function isEligible(fields: CustomField[]): boolean {
   );
 }
 
-export function toCommissionCents(affiliate: Affiliate): number {
+function toCommissionCents(affiliate: Affiliate): number {
   const raw = Number(affiliate.performance?.total?.commission);
 
   if (!Number.isFinite(raw) || raw <= 0) {
@@ -19,7 +19,7 @@ export function toCommissionCents(affiliate: Affiliate): number {
   return Math.trunc(raw);
 }
 
-export function displayName(affiliate: Affiliate): string {
+function displayName(affiliate: Affiliate): string {
   const fullName = [affiliate.firstName, affiliate.lastName]
     .filter((part): part is string => Boolean(part && part.trim()))
     .join(" ")

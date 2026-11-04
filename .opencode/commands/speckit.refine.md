@@ -26,7 +26,7 @@ Optional flags:
 
 Read the issue as it is today, find what is missing or ambiguous, ask only what changes the outcome, and produce a card a developer can implement without asking back. Never invent requirements: anything not confirmed by the card, its comments, or the user's answers is an explicit **assumption**.
 
-Language: use `jira.language` from `.specify/pessoal.yml` (default `pt-BR`).
+Language: use `jira.language` from `.specify/pessoal.yml` (default `en`).
 
 ## Configuration
 
@@ -37,7 +37,7 @@ jira:
   site: "https://your-domain.atlassian.net"
   cloud_id: "<Atlassian cloudId used by the MCP server>"
   project: "ABC"
-  language: "pt-BR"
+  language: "en"
   default_issue_type: "Task"
 ```
 
@@ -92,36 +92,36 @@ Check the issue against this list and keep only the gaps that would change the i
 Write the card in `jira.language`:
 
 ```markdown
-## Contexto
+## Context
 
 <one short paragraph: what exists today and why this issue exists>
 
-## História
+## User story
 
-Como <ator>, quero <objetivo>, para <valor>.
+As a <role>, I want <goal>, so that <value>.
 
-## Regras de negócio
+## Business rules
 
 - ...
 
-## Critérios de aceite
+## Acceptance criteria
 
 - [ ] ...
 
-## Escopo
+## Scope
 
-**Dentro:** ...
-**Fora:** ...
+**In scope:** ...
+**Out of scope:** ...
 
-## Casos de borda
-
-- ...
-
-## Premissas
+## Edge cases
 
 - ...
 
-## Dúvidas em aberto
+## Assumptions
+
+- ...
+
+## Open questions
 
 - ...
 ```
@@ -130,7 +130,7 @@ Rules:
 - Every acceptance criterion must be testable.
 - Keep the customer's original wording where it matters.
 - Do not add requirements that are not in the issue, its comments, or the user's answers.
-- Mark every inferred item under **Premissas**.
+- Mark every inferred item under **Assumptions**.
 
 ### 6. Write Back (only with `--write`)
 

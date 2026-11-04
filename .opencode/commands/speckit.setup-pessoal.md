@@ -48,7 +48,7 @@ Ask for:
 - **Site**: `https://<your-domain>.atlassian.net`. Validate `https://`.
 - **Cloud ID**: the Atlassian `cloudId` used by the MCP server. If the Atlassian MCP exposes an accessible-resources tool, list the available sites and let the user pick instead of asking for a UUID. Never invent a cloudId.
 - **Project key**: Jira project key, uppercase, 2–10 characters, letters and digits only (`^[A-Z][A-Z0-9]{1,9}$`). If the user types lowercase, uppercase it.
-- **Language**: issue language tag (default `pt-BR`).
+- **Language**: issue language tag (default `en`).
 - **Default issue type**: `Task`, `Story`, `Bug`, or `Enhancement` (default `Task`).
 
 If the user chooses to skip Jira, leave any existing `jira` block untouched and say the two Jira commands will stay unavailable until it is configured.
@@ -67,15 +67,14 @@ Ask for:
 - **Source branch** (`release.source_branch`): branch with unreleased work.
 - **Target branch** (`release.target_branch`): branch that receives the release.
 - **Version command** (`release.version_command`): optional. Leave empty to compute the version from git tags. If set, explain that it must print JSON like `{"current":"v1.2.3","next":"v1.3.0","type":"minor"}`.
-- **Changelog languages** (`release.changelog_languages`): default `["en", "pt-BR"]`.
+- **Changelog languages** (`release.changelog_languages`): default `["en"]`.
 
 If a chosen branch does not exist on the remote, warn that the release commands will stop, then ask whether to keep it. Do not silently create or rename branches.
 
 ### 4. Resolve Pull Requests (unless `--no-pr`)
 
 The preset ships a starter template at
-`.specify/presets/pessoal/templates/pull_request_template.md`. It is the santtas
-template and uses Laravel/`composer ci:check` wording, so it is a starting point,
+`.specify/presets/pessoal/templates/pull_request_template.md`. It uses Laravel/`composer ci:check` wording, so it is a starting point,
 not a universal default.
 
 1. Resolve the target path: `pr.template` from the existing config, else
@@ -106,14 +105,14 @@ Detect defaults:
     site: "https://your-domain.atlassian.net"
     cloud_id: "<cloudId>"
     project: "ABC"
-    language: "pt-BR"
+    language: "en"
     default_issue_type: "Task"
 
   release:
     source_branch: "develop"
     target_branch: "master"
     version_command: ""
-    changelog_languages: ["en", "pt-BR"]
+    changelog_languages: ["en"]
 
   pr:
     base_branch: ""

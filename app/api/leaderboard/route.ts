@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 
-import { getLeaderboard, UpstreamError } from "@/lib/refersion";
+import { getLeaderboard } from "@/lib/leaderboard-cache";
+import { UpstreamError } from "@/lib/refersion";
 
 export async function GET() {
   await connection();

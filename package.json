@@ -2,12 +2,13 @@
   "name": "refersion-challenge",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test lib/*.test.ts"
+    "test": "node --test lib/*.test.mts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.105.3",

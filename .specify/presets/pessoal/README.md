@@ -50,14 +50,14 @@ jira:
   site: "https://your-domain.atlassian.net"
   cloud_id: "<Atlassian cloudId used by the MCP server>"
   project: "ABC"
-  language: "pt-BR"
+  language: "en"
   default_issue_type: "Task"
 
 release:
   source_branch: "develop"
   target_branch: "master"
   version_command: ""              # optional; must print {"current","next","type"}
-  changelog_languages: ["en", "pt-BR"]
+  changelog_languages: ["en"]
 
 pr:
   base_branch: ""                  # empty = develop if it exists, else the remote default
@@ -71,8 +71,7 @@ Atlassian MCP server must be available in the agent session.
 
 ## Pull Request Template
 
-The preset ships `templates/pull_request_template.md` — the santtas template,
-kept as a starting point. `/speckit.setup-pessoal` copies it to
+The preset ships `templates/pull_request_template.md` as a starting point. `/speckit.setup-pessoal` copies it to
 `.github/pull_request_template.md` when the repository has no template, and only
 replaces an existing one after explicit confirmation. It mentions
 `composer ci:check` and Laravel paths, so edit it in repositories that use
